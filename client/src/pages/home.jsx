@@ -3,10 +3,11 @@ import axios from 'axios';
 import NavbarComponent from '../components/navbar';
 import QuizCard from '../components/quizCard';
 import '../css/home.css';
-import { Button, MenuItem, Select, Pagination, TextField, Box, Grid } from '@mui/material';
+import { Button, MenuItem, Select, Pagination, TextField, Box, Grid, InputAdornment } from '@mui/material';
 import FooterComponent from '../components/footer';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Home = () => {
   const [quizzes, setQuizzes] = useState([]);
@@ -97,14 +98,14 @@ const Home = () => {
       <div className='home-nav'>
         <NavbarComponent />
       </div>
-      <div style={{ paddingTop: '0px' }}> {/* Adjust the padding based on the navbar height */}
+      <div style={{ paddingTop: '0px' }}>
         <div style={{ marginRight: 'auto', marginLeft: 'auto', width: '50%', alignItems: 'center', textAlign: 'center', padding: '10px' }}>
           <h1>Welcome to <b style={{ color: 'rgb(9, 89, 170)' }}>Quiz App</b></h1>
           <br />
-          <h6 style={{ color: 'rgb(76, 89, 103)' }}>Welcome to QuizMaster, the ultimate platform to test your knowledge! Dive into a variety of quizzes, track your progress, and compete with friends. Enjoy endless learning and excitement with QuizMaster! </h6>
-          <br />
-          <Button style={{ backgroundColor: 'rgb(9, 89, 170)', color: 'white' }} onClick={handleQuizButtonClick}>Quiz</Button>
-          <p style={{ color: 'rgb(76, 89, 103)', marginTop: '10px' }}>By clicking this you will be able to view the quizzes</p>
+          <h6 style={{ color: 'rgb(76, 89, 103)' }}>Welcome to Quizzy, the ultimate platform to test your knowledge! Dive into a variety of quizzes, track your progress, and compete with friends. Enjoy endless learning and excitement with QuizMaster! </h6>
+          {/* <br /> */}
+          {/* <Button style={{ backgroundColor: 'rgb(9, 89, 170)', color: 'white' }} onClick={handleQuizButtonClick}>Quiz</Button>
+          <p style={{ color: 'rgb(76, 89, 103)', marginTop: '10px' }}>By clicking this you will be able to view the quizzes</p> */}
         </div>
         <Box display="flex" justifyContent="center" alignItems="center" margin="10px 0" padding="10px">
           <Grid>
@@ -116,7 +117,14 @@ const Home = () => {
                 name="search"
                 variant="outlined"
                 size="small"
-                style={{ maxWidth: '500px' }}
+                style={{ minWidth: '150px' }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </form>
           </Grid>

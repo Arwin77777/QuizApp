@@ -20,6 +20,7 @@ import UsersPage from './pages/userspage';
 import AdminQuizzes from './pages/adminQuizzes';
 import AdminQuizzespage from './pages/adminQuizzespage';
 import Addquizpage from './pages/addquizpage';
+import DateCalendarServerRequest from './components/calendar';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes> 
+          <Route path='/calendar' element={<DateCalendarServerRequest></DateCalendarServerRequest>}></Route>
           <Route path='/' element={<Login></Login>}></Route>
         <Route path='/signup' element={<Signup></Signup>}></Route>
           <Route path='/dashboard' element={<DashboardPage></DashboardPage>}></Route>

@@ -10,13 +10,17 @@ import TableRow from '@mui/material/TableRow';
 import axios from 'axios';
 import {Link, useNavigate} from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { useUsers } from '../components/userscontext';
 
 export default function Users() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const columns = ['Name', 'Email', 'Role'];
     const token = localStorage.getItem('token');
-    const [users, setUsers] = useState([]);
+    // const [users, setUsers] = useState([]);
+    // const {users} = useUsers();
+    const users = JSON.parse(localStorage.getItem('users'))
+    console.log(users);
 
     const decoded = jwtDecode(token);
     const role = decoded.role;
@@ -32,22 +36,7 @@ export default function Users() {
     }, [role, isAdmin, navigate]);
 
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://localhost:3000/users', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setUsers(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchData();
-    }, [token]);
+    
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -61,6 +50,7 @@ export default function Users() {
 
     return (
         <div >
+            {users.length>0 ?(
         <Paper sx={{ width: '100%', overflow: 'hidden'}}>
             <TableContainer sx={{ maxHeight: 440 }}>
                 <Table stickyHeader aria-label="sticky table">
@@ -80,8 +70,8 @@ export default function Users() {
                                 <TableCell>{user.userName}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>{user.role}</TableCell>
-                                <Link style={{textDecoration:'none'}} to={`/profile/${user.userId}`} state={{role:user.role}}>
-                                <TableCell>More</TableCell></Link>
+                                <Link style={{textDecoration:'none'}} to={`/profile/${user.userId}`} state={{role:user.role,type:'notSelf'}}>
+                                <TableCell style={{color:'blue'}}>More</TableCell></Link>
                             </TableRow>
                             // </Link>
                         ))}
@@ -89,7 +79,7 @@ export default function Users() {
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
+                rowsPerPageOptions={[5, 10, 20]}
                 component="div"
                 count={users.length}
                 rowsPerPage={rowsPerPage}
@@ -98,6 +88,9 @@ export default function Users() {
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
         </Paper>
+            ):(
+                <div style={{textAlign:'center', marginTop:'20px'}}>No Users Found</div>
+            )}
         </div>
     );
 }

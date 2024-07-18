@@ -24,10 +24,10 @@ const Questions = () => {
         'Authorization': `Bearer ${token}`
       }
     })
-    .then(res => {
-      setQuestions(res.data.questions);
-    })
-    .catch(err => console.log('Error:', err));
+      .then(res => {
+        setQuestions(res.data.questions);
+      })
+      .catch(err => console.log('Error:', err));
   }, [quizId, token]);
 
   useEffect(() => {
@@ -128,12 +128,11 @@ const Questions = () => {
         'Authorization': `Bearer ${token}`
       }
     })
-    .then(res => {
-      console.log('Score and feedback submitted successfully:', res.data);
-      console.log(quizData,userAnswers);
-      navigate(`/thankyou/${quizId}`, { state: { scoreData: res.data } });
-    })
-    .catch(err => console.log('Error submitting score and feedback:', err));
+      .then(res => {
+        console.log('Score and feedback submitted successfully:', res.data);
+        navigate(`/thankyou/${quizId}`, { state: { scoreData: res.data } });
+      })
+      .catch(err => console.log('Error submitting score and feedback:', err));
   };
 
   const handleTimeUp = () => {
@@ -145,26 +144,28 @@ const Questions = () => {
   const isQuestionAnswered = (questionId) => {
     return answers[questionId] && answers[questionId].length > 0;
   };
-  const handleTime = ()=>{
+
+  const handleTime = () => {
     const totalQuestions = questions.length;
-    if(totalQuestions<=0)
-    {
-      console.log(totalQuestions);
+    if (totalQuestions <= 0) {
       return 1;
     }
     return totalQuestions;
-  } 
+  };
 
   return (
-    <div style={{ width: '100%', padding: 0 }}>
+    <div style={{ background: 'radial-gradient(#89b5fe80,white)' }}>
       <Box
         sx={{
+          // position: 'fixed',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: 2,
           backgroundColor: '#f5f5f5',
+          width: '100%',
           borderBottom: '1px solid #ddd',
+          zIndex: 1000
         }}
       >
         {questions.length > 0 && (
@@ -185,7 +186,7 @@ const Questions = () => {
           Submit Quiz
         </Button>
       </Box>
-      <Container maxWidth="xl" sx={{ mt: 4, width: '100%' }}>
+      <Container maxWidth="xl" sx={{ width: '100%', padding: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4} md={3}>
             <Box
@@ -284,33 +285,39 @@ const Questions = () => {
                     gap: 1,
                   }}
                 >
-                  <Button
-                    variant="contained"
-                    onClick={handlePrevious}
-                    disabled={currentQuestionIndex === 0 || isSubmitted}
-                    sx={{
-                      backgroundColor: '#1976d2',
-                      '&:hover': {
-                        backgroundColor: '#1565c0',
-                      },
-                    }}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={handleNext}
-                    disabled={currentQuestionIndex === questions.length - 1 || isSubmitted}
-                    sx={{
-                      backgroundColor: '#1976d2',
-                      '&:hover': {
-                        backgroundColor: '#1565c0',
-                      },
-                    }}
-                  >
-                    Next
-                  </Button>
+                  {currentQuestionIndex !== 0 && (
+                    <Button
+                      variant="contained"
+                      onClick={handlePrevious}
+                      sx={{
+                        backgroundColor: '#1976d2',
+                        '&:hover': {
+                          backgroundColor: '#1565c0',
+                        },
+                      }}
+                    >
+                      Previous
+                    </Button>
+                  )}
+                  <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
+                    {currentQuestionIndex !== questions.length - 1 && (
+                      <Button
+                        variant="contained"
+                        onClick={handleNext}
+                        sx={{
+                          backgroundColor: '#1976d2',
+                          '&:hover': {
+                            backgroundColor: '#1565c0',
+                          },
+                        }}
+                      >
+                        Next
+                      </Button>
+                    )}
+                  </Box>
                 </Box>
+
+
                 {currentQuestionIndex === questions.length - 1 && (
                   <Box sx={{ mt: 2, textAlign: 'center' }}>
                   </Box>

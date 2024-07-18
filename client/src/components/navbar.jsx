@@ -11,14 +11,23 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, 
 
 function NavbarComponent() {
     const token = localStorage.getItem('token');
-    let userName = '';
+    let role = '';
     let userId = '';
+    let type = '';
     const decoded = jwtDecode(token);
     if (token) {
-        userName = decoded.email;
+        role = decoded.role;
         userId = decoded.userId;
     }
-    const role = decoded.role;
+    if(role==='user')
+    {
+        type = 'self';
+    }
+    else
+    {
+        type = 'noSelf';
+    }
+    // const role = decoded.role;
     const [isAdmin, setIsAdmin] = React.useState(role === 'admin');
     const navigate = useNavigate();
     React.useEffect(() => {
@@ -44,14 +53,14 @@ function NavbarComponent() {
         <Navbar className="sticky-navbar" bg="light" expand="lg">
             <Container>
                 <Link to='/home' style={{ textDecoration: 'none' }}>
-                    <Navbar.Brand>Quiz App</Navbar.Brand>
+                    <Navbar.Brand style={{ color: 'rgb(9, 89, 170)' }}>Quiz App</Navbar.Brand>
                 </Link>
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
                     <Navbar.Text>
                         {isAdmin && <Link style={{ textDecoration: 'none' }} to='/dashboard'>Dashboard</Link>}
 
-                        <Link to={`/profile/${userId}`} style={{ textDecoration: 'none' }}> <IconButton
+                        <Link to={`/profile/${userId}`} style={{ textDecoration: 'none' }} state={{role:role,type:type}}> <IconButton
                             size="large"
                             color="inherit"
                             onClick={handleLogout}>

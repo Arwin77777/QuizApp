@@ -2,11 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import QuizCard from '../components/quizCard';
 import '../css/home.css';
-import { Button, MenuItem, Select, Pagination, TextField, Box, Grid } from '@mui/material';
-import FooterComponent from '../components/footer';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, MenuItem, Select, Pagination, TextField, Box, Grid, Paper, InputAdornment } from '@mui/material';
+
 import { jwtDecode } from 'jwt-decode';
 import { Link } from 'react-router-dom';
+
+import SearchIcon from '@mui/icons-material/Search';
 
 const AdminQuizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
@@ -20,7 +21,6 @@ const AdminQuizzes = () => {
   const adminId = decoded.userId;
   const quizContainerRef = useRef(null);
   const [filteredQuizzes, setFilteredQuizzes] = useState([]);
-  // const token = localStorage.getItem('token');
 
   useEffect(() => {
     axios.get("http://localhost:3000/quizzes", {
@@ -90,64 +90,80 @@ const AdminQuizzes = () => {
 
   return (
     <div>
-        
-      <div style={{ paddingTop: '0px' }}>
+      
+      <div style={{background:'white',padding:5}}>
+       
+        {quizzes.length > 0 &&
 
-        <Box display="flex" justifyContent="center" alignItems="center" margin="10px 0" padding="10px" >
-          <Grid >
-            <form onSubmit={handleSearch} >
-              <TextField
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-                name="search"
+          <Box display="flex"  margin="10px 0" >
+            <Grid width={'40%'}>
+              <form onSubmit={handleSearch} >
+                {/* <SearchIcon></SearchIcon> */}
+                <TextField
+                  type="search"
+                  placeholder="Search"
+                  aria-label="Search"
+                  name="search"
+                  variant="outlined"
+                  size="small"
+                  style={{minWidth:'120px'}}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  />
+              </form>
+            </Grid>
+
+            <Grid>
+              <Select
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                displayEmpty
                 variant="outlined"
                 size="small"
-              />
-            </form>
-          </Grid>
-          
-          <Grid>
-            <Select
-              value={selectedCategory}
-              onChange={handleCategoryChange}
-              displayEmpty
-              // variant="outlined"
-              size="small"
-            style={{  marginLeft: '10px' }}
-            >
-              <MenuItem value=""><em>All Categories</em></MenuItem>
-              {categories.map((category, index) => (
-                <MenuItem key={index} value={category}>{category}</MenuItem>
-              ))}
-            </Select>
-          </Grid>
-          <Grid marginLeft='10px'>
-          {quizzes.length>0 && 
-        <Link to='/addQuiz'><Button variant='contained' style={{borderRadius:'20px'}}>+</Button></Link>
-      }
-      </Grid>
-        </Box>
+                style={{ marginLeft: '10px',maxWidth:100 }}
+                >
+                <MenuItem value=""><em>All Categories</em></MenuItem>
+                {categories.map((category, index) => (
+                  <MenuItem key={index} value={category}>{category}</MenuItem>
+                ))}
+              </Select>
+            </Grid>
 
-        <div ref={quizContainerRef}>
-        {quizzes.length > 0 && currentQuizzes.length > 0 && <h4>List of Quizzes</h4>}
-          <div className="quiz-container">
-          {quizzes.length === 0 ? (
+            <Grid container justifyContent={'flex-end'} >
+        {quizzes.length > 0 &&
+          <Link to='/addQuiz'><Button variant='contained' style={{ borderRadius: '10px',marginLeft:'10px' }}>Add Quiz</Button></Link>
+        }
+        </Grid>
+            
+          </Box>
+        }
+        </div>
+
+
+        <div ref={quizContainerRef}   >
+          <div style={{padding:'20px'}} className="quiz-container">
+            {quizzes.length === 0 ? (
               <div>
                 <p>No quiz to display</p>
                 <Link to='/addQuiz'><Button>Add Quiz</Button></Link>
               </div>
             ) : (
-              currentQuizzes.length>0 ?(
-            currentQuizzes.map((quiz) => (
-              <div key={quiz.quizId} className="quiz-card">
-                <QuizCard onDelete={handleDeleteQuiz} quiz={{ quizId: quiz.quizId, quizName: quiz.quizName, category: quiz.category, quizImage: quiz.quizImage, questions: quiz.questions, type: "edit" }} />
-              </div>
-            ))):(
-              <p>No Quiz match your search</p>
-            ))}
+              currentQuizzes.length > 0 ? (
+                currentQuizzes.map((quiz) => (
+                  <div key={quiz.quizId} className="quiz-card">
+                    <QuizCard onDelete={handleDeleteQuiz} quiz={{ quizId: quiz.quizId, quizName: quiz.quizName, category: quiz.category, quizImage: quiz.quizImage, questions: quiz.questions, type: "edit" }} />
+                  </div>
+                ))) : (
+                <p>No Quiz match your search</p>
+              ))}
+                         
           </div>
-          {displayQuizzes.length>quizzesPerPage && 
+          {displayQuizzes.length > quizzesPerPage &&
             <Pagination
               count={Math.ceil(displayQuizzes.length / quizzesPerPage)}
               page={currentPage}
@@ -157,7 +173,7 @@ const AdminQuizzes = () => {
             />
           }
         </div>
-      </div>
+      {/* </div> */}
       {/* <FooterComponent></FooterComponent> */}
     </div>
   );

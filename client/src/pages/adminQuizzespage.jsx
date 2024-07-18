@@ -4,7 +4,7 @@ import Sidebar from '../components/sidebar'
 const AdminQuizzespage = () => {
   return (
     <div>
-        <Sidebar pageName = 'editQuizzes'/>
+        <Sidebar pageName = 'quizzes'/>
     </div>
   )
 }

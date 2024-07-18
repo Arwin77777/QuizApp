@@ -32,7 +32,7 @@ const ValueTypography = styled(Typography)(({ theme }) => ({
 const DescriptionTypography = styled(Typography)(({ theme }) => ({
   opacity: 0.8,
   [theme.breakpoints.down('sm')]: {
-    fontSize: '0.7rem', // Example: Reduce font size on smaller screens
+    fontSize: '0.7rem',
   },
 }));
 
@@ -43,7 +43,7 @@ const StatCard = ({ title, value, description }) => {
         <TitleTypography variant="h5" component="div">
           {title}
         </TitleTypography>
-        <ValueTypography variant="h4">
+        <ValueTypography variant="h6">
           {value}
         </ValueTypography>
         <DescriptionTypography variant="body2">

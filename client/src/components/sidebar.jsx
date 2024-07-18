@@ -23,7 +23,7 @@ import Dashboard from '../pages/dashboard';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
-import EditIcon from '@mui/icons-material/Edit';
+import QuizIcon from '@mui/icons-material/Quiz';
 import AddQuiz from '../pages/addQuiz';
 
 const drawerWidth = 240;
@@ -61,7 +61,7 @@ function Sidebar(props) {
       case 'Users':
         navigate('/users');
         return;
-      case 'Edit Quiz':
+      case 'Quizzes':
         navigate('/quizzes');
         return;
       default:
@@ -77,13 +77,13 @@ function Sidebar(props) {
         </Typography>
       </Toolbar>
       <List>
-        {['Dashboard', 'Users', 'Edit Quiz'].map((text, index) => (
+        {['Dashboard', 'Users', 'Quizzes'].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton onClick={() => handleNavigation(text)}>
               <ListItemIcon>
                 {text === 'Dashboard' ? <DashboardIcon /> : null}
                 {text === 'Users' ? <GroupIcon /> : null}
-                {text === 'Edit Quiz' ? <EditIcon /> : null}
+                {text === 'Quizzes' ? <QuizIcon /> : null}
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItemButton>
@@ -118,7 +118,7 @@ function Sidebar(props) {
               >
                 <MenuIcon />
               </IconButton>
-              Admin/{pageName}
+              {pageName === 'addQuiz' ? (<div><Link style={{ textDecoration: 'none' }} to='/quizzes'>Quizzes</Link>/AddQuiz</div>) : (pageName[0].toUpperCase() + pageName.slice(1))}
               <Box
                 sx={{
                   display: 'flex',
@@ -173,11 +173,13 @@ function Sidebar(props) {
             sx={{ flexGrow: 1, p: 4, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
             style={{ background: 'radial-gradient(#89b5fe80,white)' }}
           >
+            <div style={{ marginTop: 40 }}>
+              {pageName === 'quizzes' && <AdminQuizzes />}
+            </div>
             <div style={{ marginTop: '70px' }}>
               {pageName === 'dashboard' && <Dashboard />}
               {pageName === 'users' && <Users />}
-              {pageName === 'editQuizzes' && <AdminQuizzes />}
-              {pageName === 'addQuiz' && <AddQuiz/>}
+              {pageName === 'addQuiz' && <AddQuiz />}
             </div>
           </Box>
           <Dialog open={openConfirmation} onClose={() => setOpenConfirmation(false)}>
@@ -190,17 +192,18 @@ function Sidebar(props) {
                 Cancel
               </Button>
               <Button
-                onClick={() => {
-                  localStorage.removeItem('token');
-                  navigate('/');
-                }}
-                style={{ backgroundColor: 'rgb(9, 89, 170)', color: 'white' }}
-                variant="contained"
-              >
-                Logout
-              </Button>
-            </DialogActions>
-          </Dialog>
+                  onClick={() => {
+                    localStorage.removeItem('token');
+                    navigate('/');
+                  }}
+                  style={{ backgroundColor: 'rgb(9, 89, 170)', color: 'white' }}
+                  variant="contained"
+                >
+                  Logout
+                </Button>
+              </DialogActions>
+            </Dialog>
+          {/* </Dialog> */}
         </Box>
       ) : (
         navigate('/unauthorized')

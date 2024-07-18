@@ -1,17 +1,17 @@
 .sticky-navbar {
     position: fixed;
-    top: 10px;
+    /* top: 10px; */
     left: 50%; 
     transform: translateX(-50%); 
-    width: 90%;
-    max-width: 1200px; 
+    width: 100%;
+    /* max-width: 1200px;  */
     z-index: 1000;
     backdrop-filter: blur(15px); 
   background-color: rgba(255, 255, 255, 0.6);
     color: rgb(0, 0, 0); /* Text color */
     padding: 10px; 
-    border-radius:50px ;
-    opacity: 0.9;
+    /* border-radius:50px ; */
+    /* opacity: 0.9; */
   }
 
 
@@ -64,5 +64,5 @@
 }
 
 .social-media a:hover {
-    color: #007bff; /* Change to your preferred hover color */
+    color: #007bff;
 }

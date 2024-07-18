@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Container,
@@ -15,6 +15,10 @@ import {
   Grid,
   IconButton,
   Pagination,
+  Snackbar,
+  Alert,
+  AppBar,
+  Toolbar,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { jwtDecode } from 'jwt-decode';
@@ -31,13 +35,14 @@ const EditQuiz = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const questionsPerPage = 5;
   const token = localStorage.getItem('token');
-
   const decoded = jwtDecode(token);
   const role = decoded.role;
+  const [isAdmin, setIsAdmin] = useState(role === 'admin');
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const quizContainerRef = useRef(null);
 
-  const [isAdmin, setIsAdmin] = React.useState(role === 'admin');
-
-  React.useEffect(() => {
+  useEffect(() => {
     setIsAdmin(role === 'admin');
     if (!isAdmin) {
       navigate('/unauthorized');
@@ -58,6 +63,27 @@ const EditQuiz = () => {
   }, [quizId, token]);
 
   const handleSaveQuiz = async () => {
+    // Validation check for empty fields
+    for (const question of quiz.questions) {
+      if (!question.question.trim()) {
+        setErrorMessage('Question cannot be empty.');
+        setErrorOpen(true);
+        return;
+      }
+      if (question.correctOptionIds.length === 0) {
+        setErrorMessage('Select at least one correct option.');
+        setErrorOpen(true);
+        return;
+      }
+      for (const option of question.options) {
+        if (!option.value.trim()) {
+          setErrorMessage('Option cannot be empty.');
+          setErrorOpen(true);
+          return;
+        }
+      }
+    }
+
     try {
       await axios.put(`http://localhost:3000/quiz`,
         { questions: quiz.questions },
@@ -68,28 +94,38 @@ const EditQuiz = () => {
             'Authorization': `Bearer ${token}`
           },
         });
-      navigate('/home');
+      navigate('/quizzes');
     } catch (err) {
       console.error('Error saving quiz:', err);
     }
   };
 
   const handleAddQuestion = () => {
-    // if (newQuestion.question.trim() === '' || newQuestion.options.some(option => option.value.trim() === '')) {
-    //   alert('Please enter a question and at least one option.');
-    //   return;
-    // }
     newQuestion.questionId = uuidv4();
     const updatedQuestions = [...quiz.questions, newQuestion];
     setQuiz({ ...quiz, questions: updatedQuestions });
+
+    const newTotalPages = Math.ceil(updatedQuestions.length / questionsPerPage);
+
+    setCurrentPage(newTotalPages);
+  
     setNewQuestion({
       question: '',
       options: [{ id: uuidv4(), value: '' }],
       correctOptionIds: []
     });
+  
+    if (quizContainerRef.current) {
+      quizContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
+  
 
   const handleDeleteQuestion = (index) => {
+    if(index%10===5 | index%10===0)
+    {
+      setCurrentPage(currentPage-1);
+    }
     const updatedQuestions = quiz.questions.filter((_, i) => i !== index);
     setQuiz({ ...quiz, questions: updatedQuestions });
   };
@@ -160,112 +196,138 @@ const EditQuiz = () => {
   const indexOfFirstQuestion = indexOfLastQuestion - questionsPerPage;
   const currentQuestions = quiz ? quiz.questions.slice(indexOfFirstQuestion, indexOfLastQuestion) : [];
   const handleBack = () => {
-    navigate('/dashboard');
+    navigate('/quizzes');
   }
 
+  const handleErrorClose = () => {
+    setErrorOpen(false);
+  };
+
   return (
-    <div style={{ background: '#ECECEC', padding: '10px' }}>
-      <Button onClick={handleBack}>Back</Button>
-      <Container style={{ padding: '20px' }}>
-        {quiz && (
-          <Card>
-            <CardContent>
-              <Typography variant="h4">Editing {quiz.quizName}</Typography>
-              {currentQuestions.map((question, qIndex) => (
-                <Box key={question.questionId} mb={3}>
-                  <p style={{ marginTop: 20 }}>Question {indexOfFirstQuestion + qIndex + 1}</p>
-                  <TextField
-                    label="Question"
-                    value={question.question}
-                    onChange={(e) => handleQuestionChange(indexOfFirstQuestion + qIndex, 'question', e.target.value)}
-                    fullWidth
-                    variant="outlined"
-                    margin="normal"
-                  />
-                  {question.options.map((option, oIndex) => (
-                    <Grid container spacing={1} alignItems="center" key={option.id}>
-                      <Grid item xs={9}>
-                        <TextField
-                          label={`Option ${oIndex + 1}`}
-                          value={option.value}
-                          onChange={(e) => handleOptionChange(indexOfFirstQuestion + qIndex, oIndex, e.target.value)}
-                          fullWidth
-                          variant="outlined"
-                          margin="normal"
-                        />
-                      </Grid>
-                      <Grid item xs={1}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={question.correctOptionIds.includes(option.id)}
-                              onChange={() => handleCorrectOptionChange(indexOfFirstQuestion + qIndex, option.id)}
-                            />
-                          }
-                        />
-                      </Grid>
-                      <Grid item xs={0}>
-                        <IconButton
-                          color="error"
-                          onClick={() => handleDeleteOption(indexOfFirstQuestion + qIndex, oIndex)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Grid>
-                    </Grid>
-                  ))}
-                  <Box mt={1}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleAddOption(indexOfFirstQuestion + qIndex)}
-                    >
-                      Add Option
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      onClick={() => handleDeleteQuestion(indexOfFirstQuestion + qIndex)}
-                      sx={{ ml: 1 }}
-                    >
-                      Delete Question
-                    </Button>
-                  </Box>
-                </Box>
-              ))}
-              <Grid>
+    <div style={{ background: 'radial-gradient(#89b5fe80,white)', padding: '0px' }}>
+
+      {quiz && (
+        <div>
+          <AppBar style={{ background: 'white' }}>
+            <Toolbar>
+              <Grid container>
+                <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '5px' }}>
+                  <Typography color={'black'} ><Link style={{ textDecoration: 'none' }} to='/quizzes'>Quizzes</Link>/{quiz.quizName}</Typography>
+                </div>
+              </Grid>
+              <Grid container gap={1} justifyContent={'flex-end'}>
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={handleAddQuestion}
+                  style={{ width: '50px' }}
                 >
-                  +
+                  Add
                 </Button>
-              </Grid>
-              <Grid>
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={handleSaveQuiz}
-                  style={{ marginTop: 5 }}
-                >
-                  Save Quiz
-                </Button>
-              </Grid>
-              <Box mt={2} display="flex" justifyContent="center">
-                {quiz.questions.length > questionsPerPage &&
-                  <Pagination
-                    count={Math.ceil(quiz.questions.length / questionsPerPage)}
-                    page={currentPage}
-                    onChange={handleChangePage}
-                    color="primary"
-                  />
+                {currentQuestions.length > 0 &&
+                  <Button
+                    variant="contained"
+                    color="success"
+                    onClick={handleSaveQuiz}
+                  >
+                    Save
+                  </Button>
                 }
-              </Box>
-            </CardContent>
-          </Card>
-        )}
-      </Container>
+              </Grid>
+            </Toolbar>
+          </AppBar>
+
+          <Container style={{ padding: '20px' }} >
+            <Card style={{ marginTop: 70 }}>
+              <CardContent>
+                {currentQuestions.map((question, qIndex) => (
+                  <Box key={question.questionId} mb={3}>
+                    <b style={{ marginTop: 20 }}>Question {indexOfFirstQuestion + qIndex + 1}</b>
+                    <TextField
+                      label="Question"
+                      value={question.question}
+                      onChange={(e) => handleQuestionChange(indexOfFirstQuestion + qIndex, 'question', e.target.value)}
+                      fullWidth
+                      variant="outlined"
+                      margin="normal"
+                    />
+                    {question.options.map((option, oIndex) => (
+                      <Grid container spacing={1} alignItems="center" key={option.id}>
+                        <Grid item xs={9}>
+                          <TextField
+                            label={`Option ${oIndex + 1}`}
+                            value={option.value}
+                            onChange={(e) => handleOptionChange(indexOfFirstQuestion + qIndex, oIndex, e.target.value)}
+                            fullWidth
+                            variant="outlined"
+                            margin="normal"
+                          />
+                        </Grid>
+                        <Grid item xs={1}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={question.correctOptionIds.includes(option.id)}
+                                onChange={() => handleCorrectOptionChange(indexOfFirstQuestion + qIndex, option.id)}
+                              />
+                            }
+                          />
+                        </Grid>
+                        <Grid item xs={0}>
+                          <IconButton
+                            color="error"
+                            onClick={() => handleDeleteOption(indexOfFirstQuestion + qIndex, oIndex)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Grid>
+                      </Grid>
+                    ))}
+                    <Box  mt={1}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleAddOption(indexOfFirstQuestion + qIndex)}
+                      >
+                        Add Option
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => handleDeleteQuestion(indexOfFirstQuestion + qIndex)}
+                        sx={{ ml: 1 }}
+                      >
+                        Delete Question
+                      </Button>
+                    </Box>
+                  </Box>
+                ))}
+                <Box  mt={2} display="flex" justifyContent="center">
+                  {quiz.questions.length > questionsPerPage &&
+                    <Pagination
+                      count={Math.ceil(quiz.questions.length / questionsPerPage)}
+                      page={currentPage}
+                      onChange={handleChangePage}
+                      color="primary"
+                    />
+                  }
+                </Box>
+              </CardContent>
+            </Card>
+          </Container>
+          <div ref={quizContainerRef} style={{marginTop:20,background:'white',color:'gray'}}>
+            <p >
+              @Quiz App By Arwin
+            </p>
+          </div>
+        </div>
+      )}
+
+      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Typography, Avatar, Box, TextField, Button, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Grid } from '@mui/material';
+import { Paper, Typography, Avatar, Box, TextField, Button, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Grid, Snackbar, Alert } from '@mui/material';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import NavbarComponent from '../components/navbar';
@@ -26,7 +26,11 @@ const Profile = () => {
     const [topScore, setTopScore] = useState(0);
     const [isUser, setIsUser] = useState(false);
     const location = useLocation();
-    const {role} = location.state || {}
+    const [adminQuizData, setAdminQuizData] = useState([]);
+    const [chartData, setChartData] = useState([]);
+    const { role, type } = location.state || {};
+    const [errorOpen, setErrorOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const columns = ['Quiz Name', 'Category', 'Questions', 'Score', 'Rating', 'Attempted Questions'];
 
@@ -40,11 +44,15 @@ const Profile = () => {
                     params: { userId }
                 });
                 setUserData(res.data);
+                setEditedData({ userName: res.data?.userName, email: res.data?.email });
+                console.log(editedData);
                 setIsUser(res.data.userId === decoded.userId);
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
         };
+
+        
 
         const fetchScores = async () => {
             try {
@@ -61,6 +69,8 @@ const Profile = () => {
         fetchUserData();
         fetchScores();
     }, [token, userId, decoded.userId]);
+
+
 
     useEffect(() => {
         const fetchQuizDetails = async () => {
@@ -91,10 +101,17 @@ const Profile = () => {
     }, [scores, quizzes]);
 
     useEffect(() => {
+        const adminData = mergedData.filter(data => data.createdBy === decoded.userId);
+        setAdminQuizData(adminData);
+
+        setChartData(mergedData);
+    }, [mergedData, decoded.userId]);
+
+    useEffect(() => {
         const handleInsights = () => {
-            const totalQuizzes = mergedData.length;
-            const totalScore = mergedData.reduce((acc, data) => acc + data.score, 0);
-            const topScore = mergedData.reduce((acc, data) => (data.score > acc ? data.score : acc), 0);
+            const totalQuizzes = chartData.length;
+            const totalScore = chartData.reduce((acc, data) => acc + data.score, 0);
+            const topScore = chartData.reduce((acc, data) => (data.score > acc ? data.score : acc), 0);
             const averageScore = totalQuizzes > 0 ? totalScore / totalQuizzes : 0;
 
             setTotalQuizTaken(totalQuizzes);
@@ -103,9 +120,27 @@ const Profile = () => {
         };
 
         handleInsights();
-    }, [mergedData]);
+    }, [chartData]);
 
     const updateUser = async () => {
+        if(editedData.userName.length===0 & editedData.email.length===0)
+            {
+                setErrorMessage('Name and email should not be empty');
+                setErrorOpen(true);
+                return;
+            }
+        if(editedData.userName.length===0)
+        {
+            setErrorMessage('Name should not be empty');
+            setErrorOpen(true);
+            return;
+        }
+        if(editedData.email.length===0)
+        {
+            setErrorMessage('Email should not be empty');
+            setErrorOpen(true);
+            return;
+        }
         try {
             await axios.put('http://localhost:3000/user', editedData, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -115,6 +150,9 @@ const Profile = () => {
             console.error("Error updating user data:", error);
         }
     };
+    const handleErrorClose = () => {
+        setErrorOpen(false);
+      };
 
     const handleEditClick = () => {
         setEditMode(true);
@@ -127,13 +165,13 @@ const Profile = () => {
 
     const handleConfirmUpdate = () => {
         updateUser();
-        setEditMode(false);
+        // setEditMode(false);
         setOpenConfirmation(false);
     };
 
     const handleCancelUpdate = () => {
         setEditMode(false);
-        setEditedData({});
+        setEditedData({ userName: userData?.userName, email: userData?.email});
     };
 
     const handleChange = (e) => {
@@ -163,7 +201,7 @@ const Profile = () => {
                 <Paper elevation={3} style={{ padding: 20 }}>
                     <Box display="flex" flexDirection="column" alignItems="center">
                         <Avatar alt={userData?.userName} src={userData?.avatar} style={{ width: 100, height: 100 }} />
-                        {editMode ? (
+                        {isUser? (
                             <>
                                 <TextField
                                     name="userName"
@@ -188,17 +226,17 @@ const Profile = () => {
                                     </Button>
                                 </Box>
                             </>
-                        ) : (
-                            <>
-                                <Typography variant="h5" style={{ marginTop: 20 }}>{userData?.userName}</Typography>
-                                <Typography variant="body1" color="textSecondary">{userData?.email}</Typography>
-                                {isUser && <Button variant="contained" onClick={handleEditClick} style={{ backgroundColor: 'rgb(9, 89, 170)', color: 'white', marginTop: '10px' }}>
-                                    Edit
-                                </Button>}
-                            </>
-                        )}
+                         ): (
+                             <>
+                                 <Typography variant="h5" style={{ marginTop: 20 }}>{userData?.userName}</Typography>
+                                 <Typography variant="body1" color="textSecondary">{userData?.email}</Typography>
+                                 {isUser && <Button variant="contained" onClick={handleEditClick} style={{ backgroundColor: 'rgb(9, 89, 170)', color: 'white', marginTop: '10px' }}>
+                                     Edit
+                                 </Button>}
+                             </>
+                         )} 
                     </Box>
-                    {role==='user' && (
+                    {(type === 'self' || role === 'user') && (
                         <div>
                             <Tabs value={tabIndex} onChange={handleTabChange} style={{ marginTop: '15px' }} centered>
                                 <Tab label="History" />
@@ -228,6 +266,7 @@ const Profile = () => {
                                                             <TableCell>{data.score}</TableCell>
                                                             <TableCell>{data.rating}</TableCell>
                                                             <TableCell>{data.attemptedQuestions}</TableCell>
+                                                            {data.createdBy === decoded.userId && <TableCell>Your Quiz</TableCell>}
                                                         </TableRow>
                                                     ))}
                                                 </TableBody>
@@ -245,33 +284,49 @@ const Profile = () => {
                                     </Paper>
                                 )}
                                 {tabIndex === 1 && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                        <h2>Charts</h2>
-                                        <Grid container spacing={3}>
-                                            <Grid item xs={12} sm={6}>
-                                                <ChartContainer data={mergedData} type="Bar" />
+                                    <div>
+                                        {decoded.role === 'admin' &&
+                                            <div style={{ gap: 20 }}>
+                                                <Button variant={chartData === adminQuizData ? 'contained' : 'text'} onClick={() => (setChartData(adminQuizData))}>Your Quiz alone</Button>
+                                                <Button variant={chartData === mergedData ? 'contained' : 'text'} onClick={() => (setChartData(mergedData))}>All Quizzes</Button>
+                                            </div>
+                                        }
+                                        <br />
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <Grid container spacing={3}>
+                                                <Grid item xs={12} sm={6}>
+                                                    <ChartContainer data={chartData} type="Bar" />
+                                                </Grid>
+                                                <Grid item xs={12} sm={6}>
+                                                    <ChartContainer data={chartData} type="Line" />
+                                                </Grid>
+                                                <Grid item xs={12} sm={6}>
+                                                    <ChartContainer data={chartData} type="Pie" />
+                                                </Grid>
                                             </Grid>
-                                            <Grid item xs={12} sm={6}>
-                                                <ChartContainer data={mergedData} type="Line" />
-                                            </Grid>
-                                            <Grid item xs={12} sm={6}>
-                                                <ChartContainer data={mergedData} type="Pie" />
-                                            </Grid>
-                                        </Grid>
+                                        </div>
                                     </div>
                                 )}
                                 {tabIndex === 2 && (
-                                    <Grid container spacing={3}>
-                                        <Grid item xs={12} sm={6} md={4}>
-                                            <StatCard title="Total Quizzes" value={totalQuizTaken} description="Number of Quizzes taken" />
+                                    <div>
+                                        {decoded.role === 'admin' &&
+                                            <div style={{ gap: 20 }}>
+                                                <Button variant={chartData === adminQuizData ? 'contained' : 'text'} onClick={() => (setChartData(adminQuizData))}>Your Quiz alone</Button>
+                                                <Button variant={chartData === mergedData ? 'contained' : 'text'} onClick={() => (setChartData(mergedData))}>All Quizzes</Button>
+                                            </div>
+                                        }
+                                        <Grid container spacing={3}>
+                                            <Grid item xs={12} sm={6} md={4}>
+                                                <StatCard title="Total Quizzes" value={totalQuizTaken} description="Number of Quizzes taken" />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} md={4}>
+                                                <StatCard title="Average Score" value={averageScore.toFixed(2)} description="Average score across quizzes" />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} md={4}>
+                                                <StatCard title="Top Score" value={topScore.toFixed(2)} description="Top score across quizzes" />
+                                            </Grid>
                                         </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
-                                            <StatCard title="Average Score" value={averageScore.toFixed(2)} description="Average score across quizzes" />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6} md={4}>
-                                            <StatCard title="Top Score" value={topScore.toFixed(2)} description="Top score across quizzes" />
-                                        </Grid>
-                                    </Grid>
+                                    </div>
                                 )}
                             </Box>
                         </div>
@@ -293,6 +348,12 @@ const Profile = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
+          {errorMessage}
+        </Alert>
+      </Snackbar>
         </div>
     );
 };
