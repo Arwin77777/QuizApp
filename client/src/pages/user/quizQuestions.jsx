@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Button, Container, Grid, Typography, List, ListItem, ListItemButton, ListItemText, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import Timer from '../components/timer';
+import Timer from '../../components/timer';
 
 const Questions = () => {
   const { quizId } = useParams();

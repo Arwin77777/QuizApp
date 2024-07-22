@@ -4,7 +4,7 @@ const Quiz = async () => {
     const client = new DynamoDBClient({
         region: 'us-west-2',
         endpoint: 'http://localhost:8000',
-        
+
     });
 
     const tableName = 'Quiz';

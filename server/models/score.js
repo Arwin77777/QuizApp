@@ -4,22 +4,22 @@ const Score = async () => {
     const client = new DynamoDBClient({
         region: 'us-west-2',
         endpoint: 'http://localhost:8000',
-        
+
     });
 
     const tableName = "Scores";
 
     const tableParams = {
-        TableName : tableName,
-        KeySchema : [
-            {AttributeName:"userId",KeyType:"HASH"},
-            {AttributeName:"quizId",KeyType:"RANGE"}
+        TableName: tableName,
+        KeySchema: [
+            { AttributeName: "userId", KeyType: "HASH" },
+            { AttributeName: "quizId", KeyType: "RANGE" }
         ],
-        AttributeDefinitions : [
-            {AttributeName:"userId",AttributeType:"S"},
-            {AttributeName:"quizId",AttributeType:"S"}
+        AttributeDefinitions: [
+            { AttributeName: "userId", AttributeType: "S" },
+            { AttributeName: "quizId", AttributeType: "S" }
         ],
-        ProvisionedThroughput : {
+        ProvisionedThroughput: {
             ReadCapacityUnits: 5,
             WriteCapacityUnits: 5
         }

@@ -31,7 +31,7 @@ function Signup() {
     const { authenticated, role } = isAuthenticated();
     if (authenticated) {
       if (role === 'admin') {
-        console.log("Into the check",role);
+        console.log("Into the check", role);
         navigate('/dashboard', { replace: true });
       } else {
         navigate('/home', { replace: true });
@@ -93,96 +93,96 @@ function Signup() {
   };
 
   return (
-    <div style={{ background: 'linear-gradient(#89b5fe80, white)'}}>
-    <Container
-      maxWidth="sm"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-       
-      }}
-    >
-      <Card sx={{ width: '100%', borderRadius: 2 ,padding:'10px 20px'}}>
-        <CardContent>
-          <Typography variant="h4" component="h2" align="center" sx={{ color: '#1769aa', mb: 2 }}>
-            SIGN UP
-          </Typography>
-          {error && <Typography variant="body1" color="error" align="center">{error}</Typography>}
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  name="userName"
-                  onChange={handleChange}
-                  label="Name"
-                  type="text"
-                  variant="outlined"
-                  value={user.userName}
-                  error={Boolean(inputErrors.name)}
-                  helperText={inputErrors.name}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  name="email"
-                  onChange={handleChange}
-                  label="Email"
-                  type="email"
-                  variant="outlined"
-                  value={user.email}
-                  error={Boolean(inputErrors.email)}
-                  helperText={inputErrors.email}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  name="password"
-                  onChange={handleChange}
-                  label="Password"
-                  type="password"
-                  variant="outlined"
-                  value={user.password}
-                  error={Boolean(inputErrors.password)}
-                  helperText={inputErrors.password}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={handleChange}
-                      name="role"
-                      checked={user.role === 'admin'}
-                      size="small" 
-                    />
-                  }
-                  label="Admin"
-                />
-              </Grid>
-              <Grid item xs={12} textAlign="center">
-                <Link href="/" >Login?</Link>
-              </Grid>
-              <Grid item xs={12} textAlign="center">
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
+    <div style={{ background: 'linear-gradient(#89b5fe80, white)' }}>
+      <Container
+        maxWidth="sm"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+
+        }}
+      >
+        <Card sx={{ width: '100%', borderRadius: 2, padding: '10px 20px' }}>
+          <CardContent>
+            <Typography variant="h4" component="h2" align="center" sx={{ color: '#1769aa', mb: 2 }}>
+              SIGN UP
+            </Typography>
+            {error && <Typography variant="body1" color="error" align="center">{error}</Typography>}
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    name="userName"
+                    onChange={handleChange}
+                    label="Name"
+                    type="text"
+                    variant="outlined"
+                    value={user.userName}
+                    error={Boolean(inputErrors.name)}
+                    helperText={inputErrors.name}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    name="email"
+                    onChange={handleChange}
+                    label="Email"
+                    type="email"
+                    variant="outlined"
+                    value={user.email}
+                    error={Boolean(inputErrors.email)}
+                    helperText={inputErrors.email}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    name="password"
+                    onChange={handleChange}
+                    label="Password"
+                    type="password"
+                    variant="outlined"
+                    value={user.password}
+                    error={Boolean(inputErrors.password)}
+                    helperText={inputErrors.password}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onChange={handleChange}
+                        name="role"
+                        checked={user.role === 'admin'}
+                        size="small"
+                      />
+                    }
+                    label="Admin"
+                  />
+                </Grid>
+                <Grid item xs={12} textAlign="center">
+                  <Link href="/" >Login?</Link>
+                </Grid>
+                <Grid item xs={12} textAlign="center">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
                   // sx={{ mt: 2 }}
-                >
-                  Signup
-                </Button>
+                  >
+                    Signup
+                  </Button>
+                </Grid>
               </Grid>
-            </Grid>
-          </form>
-        </CardContent>
-      </Card>
-    </Container>
+            </form>
+          </CardContent>
+        </Card>
+      </Container>
     </div>
   );
 }

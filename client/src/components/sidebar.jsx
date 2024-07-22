@@ -13,18 +13,18 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import AdminQuizzes from '../pages/adminQuizzes';
-import Users from '../pages/users';
+import AdminQuizzes from '../pages/admin/quizzes';
+import Users from '../pages/admin/users';
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Dashboard from '../pages/dashboard';
+import Dashboard from '../pages/admin/dashboard';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
 import QuizIcon from '@mui/icons-material/Quiz';
-import AddQuiz from '../pages/addQuiz';
+import AddQuiz from '../pages/admin/quiz';
 
 const drawerWidth = 240;
 
@@ -118,7 +118,7 @@ function Sidebar(props) {
               >
                 <MenuIcon />
               </IconButton>
-              {pageName === 'addQuiz' ? (<div><Link style={{ textDecoration: 'none' }} to='/quizzes'>Quizzes</Link>/AddQuiz</div>) : (pageName[0].toUpperCase() + pageName.slice(1))}
+              {pageName === 'addQuiz' ? (<div><Link style={{ textDecoration: 'none' }} to='/quizzes'>Quizzes</Link> / AddQuiz</div>) : (pageName[0].toUpperCase() + pageName.slice(1))}
               <Box
                 sx={{
                   display: 'flex',
@@ -192,17 +192,17 @@ function Sidebar(props) {
                 Cancel
               </Button>
               <Button
-                  onClick={() => {
-                    localStorage.removeItem('token');
-                    navigate('/');
-                  }}
-                  style={{ backgroundColor: 'rgb(9, 89, 170)', color: 'white' }}
-                  variant="contained"
-                >
-                  Logout
-                </Button>
-              </DialogActions>
-            </Dialog>
+                onClick={() => {
+                  localStorage.removeItem('token');
+                  navigate('/');
+                }}
+                style={{ backgroundColor: 'rgb(9, 89, 170)', color: 'white' }}
+                variant="contained"
+              >
+                Logout
+              </Button>
+            </DialogActions>
+          </Dialog>
           {/* </Dialog> */}
         </Box>
       ) : (

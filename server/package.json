@@ -16,6 +16,7 @@
     "aws-sdk": "^2.1648.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "dynamodb-admin": "^4.6.1",
     "express": "^4.19.2",
     "googleapis": "^140.0.1",

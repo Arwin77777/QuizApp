@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, CardContent, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -18,14 +18,14 @@ const StyledCard = styled(Card)(({ theme }) => ({
 const TitleTypography = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
   [theme.breakpoints.down('sm')]: {
-    fontSize: '1.5rem', // Example: Reduce font size on smaller screens
+    fontSize: '1.5rem',
   },
 }));
 
 const ValueTypography = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
   [theme.breakpoints.down('sm')]: {
-    fontSize: '3rem', // Example: Reduce font size on smaller screens
+    fontSize: '3rem',
   },
 }));
 

@@ -8,7 +8,6 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import axios from 'axios';
-import Charts from './charts'; // Assuming you have a Charts component
 import BarChartComponent from '../components/barchart';
 
 export default function Quizzes() {
@@ -35,7 +34,7 @@ export default function Quizzes() {
         };
         fetchScores();
     }, [token]);
-    const handleMergeData = ()=>{
+    const handleMergeData = () => {
         console.log(mergedData);
     }
 

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Typography, Avatar, Box, TextField, Button, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Grid, Snackbar, Alert } from '@mui/material';
+import { Paper, Typography, Avatar, Box, TextField, Button, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Grid, Snackbar, Alert, Tooltip } from '@mui/material';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import NavbarComponent from '../components/navbar';
 import StatCard from '../components/statCard';
 import ChartContainer from '../components/chartcontainer';
 import { useLocation, useParams } from 'react-router-dom';
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 const Profile = () => {
     const { userId } = useParams();
@@ -13,6 +14,7 @@ const Profile = () => {
     const decoded = jwtDecode(token);
     const [userData, setUserData] = useState(null);
     const [editMode, setEditMode] = useState(false);
+    const [historyData, setHistoryData] = useState([]);
     const [editedData, setEditedData] = useState({});
     const [tabIndex, setTabIndex] = useState(0);
     const [openConfirmation, setOpenConfirmation] = useState(false);
@@ -31,6 +33,7 @@ const Profile = () => {
     const { role, type } = location.state || {};
     const [errorOpen, setErrorOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [submittedData, setSubmittedData] = useState([]);
 
     const columns = ['Quiz Name', 'Category', 'Questions', 'Score', 'Rating', 'Attempted Questions'];
 
@@ -52,7 +55,7 @@ const Profile = () => {
             }
         };
 
-        
+
 
         const fetchScores = async () => {
             try {
@@ -102,8 +105,13 @@ const Profile = () => {
 
     useEffect(() => {
         const adminData = mergedData.filter(data => data.createdBy === decoded.userId);
+        if (decoded.role === 'admin') {
+            setHistoryData(adminData);
+        }
+        else {
+            setHistoryData(mergedData);
+        }
         setAdminQuizData(adminData);
-
         setChartData(mergedData);
     }, [mergedData, decoded.userId]);
 
@@ -113,7 +121,18 @@ const Profile = () => {
             const totalScore = chartData.reduce((acc, data) => acc + data.score, 0);
             const topScore = chartData.reduce((acc, data) => (data.score > acc ? data.score : acc), 0);
             const averageScore = totalQuizzes > 0 ? totalScore / totalQuizzes : 0;
+            const submissions = chartData.reduce((acc, data) => {
+                const date = new Date(data.submittedAt * 1000).toLocaleDateString('en-US');
+                if (!acc[date]) {
+                    acc[date] = { date, count: 0 };
+                }
+                acc[date].count += 1;
+                return acc;
+            }, {});
 
+            const cd = Object.values(submissions);
+            setSubmittedData(cd);
+            // setSubmittedData(submissions);
             setTotalQuizTaken(totalQuizzes);
             setAverageScore(averageScore);
             setTopScore(topScore);
@@ -123,20 +142,17 @@ const Profile = () => {
     }, [chartData]);
 
     const updateUser = async () => {
-        if(editedData.userName.length===0 & editedData.email.length===0)
-            {
-                setErrorMessage('Name and email should not be empty');
-                setErrorOpen(true);
-                return;
-            }
-        if(editedData.userName.length===0)
-        {
+        if (editedData.userName.length === 0 & editedData.email.length === 0) {
+            setErrorMessage('Name and email should not be empty');
+            setErrorOpen(true);
+            return;
+        }
+        if (editedData.userName.length === 0) {
             setErrorMessage('Name should not be empty');
             setErrorOpen(true);
             return;
         }
-        if(editedData.email.length===0)
-        {
+        if (editedData.email.length === 0) {
             setErrorMessage('Email should not be empty');
             setErrorOpen(true);
             return;
@@ -152,7 +168,7 @@ const Profile = () => {
     };
     const handleErrorClose = () => {
         setErrorOpen(false);
-      };
+    };
 
     const handleEditClick = () => {
         setEditMode(true);
@@ -171,7 +187,7 @@ const Profile = () => {
 
     const handleCancelUpdate = () => {
         setEditMode(false);
-        setEditedData({ userName: userData?.userName, email: userData?.email});
+        setEditedData({ userName: userData?.userName, email: userData?.email });
     };
 
     const handleChange = (e) => {
@@ -201,7 +217,7 @@ const Profile = () => {
                 <Paper elevation={3} style={{ padding: 20 }}>
                     <Box display="flex" flexDirection="column" alignItems="center">
                         <Avatar alt={userData?.userName} src={userData?.avatar} style={{ width: 100, height: 100 }} />
-                        {isUser? (
+                        {isUser ? (
                             <>
                                 <TextField
                                     name="userName"
@@ -226,15 +242,15 @@ const Profile = () => {
                                     </Button>
                                 </Box>
                             </>
-                         ): (
-                             <>
-                                 <Typography variant="h5" style={{ marginTop: 20 }}>{userData?.userName}</Typography>
-                                 <Typography variant="body1" color="textSecondary">{userData?.email}</Typography>
-                                 {isUser && <Button variant="contained" onClick={handleEditClick} style={{ backgroundColor: 'rgb(9, 89, 170)', color: 'white', marginTop: '10px' }}>
-                                     Edit
-                                 </Button>}
-                             </>
-                         )} 
+                        ) : (
+                            <>
+                                <Typography variant="h5" style={{ marginTop: 20 }}>{userData?.userName}</Typography>
+                                <Typography variant="body1" color="textSecondary">{userData?.email}</Typography>
+                                {isUser && <Button variant="contained" onClick={handleEditClick} style={{ backgroundColor: 'rgb(9, 89, 170)', color: 'white', marginTop: '10px' }}>
+                                    Edit
+                                </Button>}
+                            </>
+                        )}
                     </Box>
                     {(type === 'self' || role === 'user') && (
                         <div>
@@ -252,13 +268,13 @@ const Profile = () => {
                                                     <TableRow>
                                                         {columns.map((column, index) => (
                                                             <TableCell key={index} style={{ minWidth: 100 }}>
-                                                                {column}
+                                                                <b> {column} </b>
                                                             </TableCell>
                                                         ))}
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
-                                                    {mergedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((data) => (
+                                                    {historyData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((data) => (
                                                         <TableRow hover role="checkbox" tabIndex={-1} key={data.quizId}>
                                                             <TableCell>{data.quizName}</TableCell>
                                                             <TableCell>{data.category}</TableCell>
@@ -266,7 +282,7 @@ const Profile = () => {
                                                             <TableCell>{data.score}</TableCell>
                                                             <TableCell>{data.rating}</TableCell>
                                                             <TableCell>{data.attemptedQuestions}</TableCell>
-                                                            {data.createdBy === decoded.userId && <TableCell>Your Quiz</TableCell>}
+                                                            {/* {data.createdBy === decoded.userId && <TableCell>Your Quiz</TableCell>} */}
                                                         </TableRow>
                                                     ))}
                                                 </TableBody>
@@ -295,14 +311,32 @@ const Profile = () => {
                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                             <Grid container spacing={3}>
                                                 <Grid item xs={12} sm={6}>
-                                                    <ChartContainer data={chartData} type="Bar" />
+                                                    {/* <h2>Quiz Scores</h2> */}
+                                                    <ChartContainer data={chartData} type="Bar" title="Scores" />
                                                 </Grid>
+                                                {/* <Grid item xs={12} sm={6}> */}
+                                                {/* <ChartContainer data={chartData} type="Line" /> */}
                                                 <Grid item xs={12} sm={6}>
-                                                    <ChartContainer data={chartData} type="Line" />
+                                                    <Box height={400} boxShadow={3} borderRadius={10} p={3} mb={4}>
+                                                        <Typography variant="h6" gutterBottom align="center">Submissions Over Time</Typography>
+                                                        <ResponsiveContainer width="100%" height="80%">
+                                                            <LineChart data={submittedData}>
+                                                                <CartesianGrid strokeDasharray="3 3" />
+                                                                <XAxis dataKey="date" />
+                                                                <YAxis />
+                                                                <Tooltip />
+                                                                <Legend />
+                                                                <Line type="monotone" dataKey="count" stroke="#" />
+                                                            </LineChart>
+                                                        </ResponsiveContainer>
+                                                    </Box>
+                                                    {/* </Box> */}
+
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     <ChartContainer data={chartData} type="Pie" />
                                                 </Grid>
+                                                {/* </Grid> */}
                                             </Grid>
                                         </div>
                                     </div>
@@ -350,10 +384,10 @@ const Profile = () => {
             </Dialog>
 
             <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
-        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
-        </Alert>
-      </Snackbar>
+                <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
+                    {errorMessage}
+                </Alert>
+            </Snackbar>
         </div>
     );
 };

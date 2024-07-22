@@ -108,23 +108,22 @@ const EditQuiz = () => {
     const newTotalPages = Math.ceil(updatedQuestions.length / questionsPerPage);
 
     setCurrentPage(newTotalPages);
-  
+
     setNewQuestion({
       question: '',
       options: [{ id: uuidv4(), value: '' }],
       correctOptionIds: []
     });
-  
+
     if (quizContainerRef.current) {
       quizContainerRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
-  
+
 
   const handleDeleteQuestion = (index) => {
-    if(index%10===5 | index%10===0)
-    {
-      setCurrentPage(currentPage-1);
+    if (index % 10 === 5 | index % 10 === 0) {
+      setCurrentPage(currentPage - 1);
     }
     const updatedQuestions = quiz.questions.filter((_, i) => i !== index);
     setQuiz({ ...quiz, questions: updatedQuestions });
@@ -195,139 +194,139 @@ const EditQuiz = () => {
   const indexOfLastQuestion = currentPage * questionsPerPage;
   const indexOfFirstQuestion = indexOfLastQuestion - questionsPerPage;
   const currentQuestions = quiz ? quiz.questions.slice(indexOfFirstQuestion, indexOfLastQuestion) : [];
-  const handleBack = () => {
-    navigate('/quizzes');
-  }
 
   const handleErrorClose = () => {
     setErrorOpen(false);
   };
 
   return (
-    <div style={{ background: 'radial-gradient(#89b5fe80,white)', padding: '0px' }}>
+    <div>
 
       {quiz && (
-        <div>
-          <AppBar style={{ background: 'white' }}>
-            <Toolbar>
-              <Grid container>
-                <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '5px' }}>
-                  <Typography color={'black'} ><Link style={{ textDecoration: 'none' }} to='/quizzes'>Quizzes</Link>/{quiz.quizName}</Typography>
-                </div>
-              </Grid>
-              <Grid container gap={1} justifyContent={'flex-end'}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleAddQuestion}
-                  style={{ width: '50px' }}
-                >
-                  Add
-                </Button>
-                {currentQuestions.length > 0 &&
+        <div style={{ background: 'radial-gradient(#89b5fe80,white)', padding: '0px' }}>
+
+          <div>
+            <AppBar style={{ background: 'white' }}>
+              <Toolbar>
+                <Grid container>
+                  <div style={{ display: 'flex', justifyContent: 'flex-start', padding: '5px' }}>
+                    <Typography color={'black'} ><Link style={{ textDecoration: 'none' }} to='/quizzes'>Quizzes</Link> / {quiz.quizName}</Typography>
+                  </div>
+                </Grid>
+                <Grid container gap={1} justifyContent={'flex-end'} padding={1}>
                   <Button
                     variant="contained"
-                    color="success"
-                    onClick={handleSaveQuiz}
+                    color="primary"
+                    onClick={handleAddQuestion}
+                  // style={{ width: '50px' }}
                   >
-                    Save
+                    Add Question
                   </Button>
-                }
-              </Grid>
-            </Toolbar>
-          </AppBar>
-
-          <Container style={{ padding: '20px' }} >
-            <Card style={{ marginTop: 70 }}>
-              <CardContent>
-                {currentQuestions.map((question, qIndex) => (
-                  <Box key={question.questionId} mb={3}>
-                    <b style={{ marginTop: 20 }}>Question {indexOfFirstQuestion + qIndex + 1}</b>
-                    <TextField
-                      label="Question"
-                      value={question.question}
-                      onChange={(e) => handleQuestionChange(indexOfFirstQuestion + qIndex, 'question', e.target.value)}
-                      fullWidth
-                      variant="outlined"
-                      margin="normal"
-                    />
-                    {question.options.map((option, oIndex) => (
-                      <Grid container spacing={1} alignItems="center" key={option.id}>
-                        <Grid item xs={9}>
-                          <TextField
-                            label={`Option ${oIndex + 1}`}
-                            value={option.value}
-                            onChange={(e) => handleOptionChange(indexOfFirstQuestion + qIndex, oIndex, e.target.value)}
-                            fullWidth
-                            variant="outlined"
-                            margin="normal"
-                          />
-                        </Grid>
-                        <Grid item xs={1}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={question.correctOptionIds.includes(option.id)}
-                                onChange={() => handleCorrectOptionChange(indexOfFirstQuestion + qIndex, option.id)}
-                              />
-                            }
-                          />
-                        </Grid>
-                        <Grid item xs={0}>
-                          <IconButton
-                            color="error"
-                            onClick={() => handleDeleteOption(indexOfFirstQuestion + qIndex, oIndex)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Grid>
-                      </Grid>
-                    ))}
-                    <Box  mt={1}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleAddOption(indexOfFirstQuestion + qIndex)}
-                      >
-                        Add Option
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => handleDeleteQuestion(indexOfFirstQuestion + qIndex)}
-                        sx={{ ml: 1 }}
-                      >
-                        Delete Question
-                      </Button>
-                    </Box>
-                  </Box>
-                ))}
-                <Box  mt={2} display="flex" justifyContent="center">
-                  {quiz.questions.length > questionsPerPage &&
-                    <Pagination
-                      count={Math.ceil(quiz.questions.length / questionsPerPage)}
-                      page={currentPage}
-                      onChange={handleChangePage}
-                      color="primary"
-                    />
+                  {currentQuestions.length > 0 &&
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={handleSaveQuiz}
+                    >
+                      Save Quiz
+                    </Button>
                   }
-                </Box>
-              </CardContent>
-            </Card>
-          </Container>
-          <div ref={quizContainerRef} style={{marginTop:20,background:'white',color:'gray'}}>
-            <p >
-              @Quiz App By Arwin
-            </p>
+                </Grid>
+              </Toolbar>
+            </AppBar>
+
+            <Container style={{ padding: '20px' }} >
+              <Card style={{ marginTop: 70 }}>
+                <CardContent>
+                  {currentQuestions.map((question, qIndex) => (
+                    <Box key={question.questionId} mb={3}>
+                      <b style={{ marginTop: 20 }}>Question {indexOfFirstQuestion + qIndex + 1}</b>
+                      <TextField
+                        label="Question"
+                        value={question.question}
+                        onChange={(e) => handleQuestionChange(indexOfFirstQuestion + qIndex, 'question', e.target.value)}
+                        fullWidth
+                        variant="outlined"
+                        margin="normal"
+                      />
+                      {question.options.map((option, oIndex) => (
+                        <Grid container spacing={1} alignItems="center" key={option.id}>
+                          <Grid item xs={9}>
+                            <TextField
+                              label={`Option ${oIndex + 1}`}
+                              value={option.value}
+                              onChange={(e) => handleOptionChange(indexOfFirstQuestion + qIndex, oIndex, e.target.value)}
+                              fullWidth
+                              variant="outlined"
+                              margin="normal"
+                            />
+                          </Grid>
+                          <Grid item xs={1}>
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={question.correctOptionIds.includes(option.id)}
+                                  onChange={() => handleCorrectOptionChange(indexOfFirstQuestion + qIndex, option.id)}
+                                />
+                              }
+                            />
+                          </Grid>
+                          <Grid item xs={0}>
+                            <IconButton
+                              color="error"
+                              onClick={() => handleDeleteOption(indexOfFirstQuestion + qIndex, oIndex)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+                      ))}
+                      <Box mt={1}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => handleAddOption(indexOfFirstQuestion + qIndex)}
+                        >
+                          Add Option
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => handleDeleteQuestion(indexOfFirstQuestion + qIndex)}
+                          sx={{ ml: 1 }}
+                        >
+                          Delete Question
+                        </Button>
+                      </Box>
+                    </Box>
+                  ))}
+                  <Box mt={2} display="flex" justifyContent="center">
+                    {quiz.questions.length > questionsPerPage &&
+                      <Pagination
+                        count={Math.ceil(quiz.questions.length / questionsPerPage)}
+                        page={currentPage}
+                        onChange={handleChangePage}
+                        color="primary"
+                      />
+                    }
+                  </Box>
+                </CardContent>
+              </Card>
+            </Container>
+            <div ref={quizContainerRef} style={{ marginTop: 20, background: 'white', color: 'gray' }}>
+              <p >
+                @Quiz App By Arwin
+              </p>
+            </div>
           </div>
+
+          <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+            <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
+              {errorMessage}
+            </Alert>
+          </Snackbar>
         </div>
       )}
-
-      <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
-        <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-          {errorMessage}
-        </Alert>
-      </Snackbar>
     </div>
   );
 };

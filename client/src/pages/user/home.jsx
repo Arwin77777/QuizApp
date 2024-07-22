@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import NavbarComponent from '../components/navbar';
-import QuizCard from '../components/quizCard';
-import '../css/home.css';
-import { Button, MenuItem, Select, Pagination, TextField, Box, Grid, InputAdornment } from '@mui/material';
-import FooterComponent from '../components/footer';
+import NavbarComponent from '../../components/navbar';
+import QuizCard from '../../components/quizCard';
+import '../../css/home.css';
+import { MenuItem, Select, Pagination, TextField, Box, Grid, InputAdornment } from '@mui/material';
+import FooterComponent from '../../components/footer';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import SearchIcon from '@mui/icons-material/Search';

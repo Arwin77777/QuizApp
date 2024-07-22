@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../css/navbar.css'; // Import your custom CSS file for Navbar styling
-import { jwtDecode } from 'jwt-decode'; // Corrected import statement
+import '../css/navbar.css';
+import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -19,12 +19,10 @@ function NavbarComponent() {
         role = decoded.role;
         userId = decoded.userId;
     }
-    if(role==='user')
-    {
+    if (role === 'user') {
         type = 'self';
     }
-    else
-    {
+    else {
         type = 'noSelf';
     }
     // const role = decoded.role;
@@ -54,13 +52,16 @@ function NavbarComponent() {
             <Container>
                 <Link to='/home' style={{ textDecoration: 'none' }}>
                     <Navbar.Brand style={{ color: 'rgb(9, 89, 170)' }}>Quiz App</Navbar.Brand>
+                    {isAdmin && <Link style={{ textDecoration: 'none' }} to='/dashboard'>Dashboard</Link>}
+                    {/* {isAdmin && <span style={{ textDecoration: 'none', color:'black' }} to='/users'> / Users</span>} */}
+                    {isAdmin && <span style={{ textDecoration: 'none', color: 'black' }} to='/users'> / Profile</span>}
                 </Link>
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
                     <Navbar.Text>
-                        {isAdmin && <Link style={{ textDecoration: 'none' }} to='/dashboard'>Dashboard</Link>}
 
-                        <Link to={`/profile/${userId}`} style={{ textDecoration: 'none' }} state={{role:role,type:type}}> <IconButton
+
+                        <Link to={`/profile/${userId}`} style={{ textDecoration: 'none' }} state={{ role: role, type: type }}> <IconButton
                             size="large"
                             color="inherit"
                             onClick={handleLogout}>

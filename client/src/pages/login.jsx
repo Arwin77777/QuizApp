@@ -11,7 +11,7 @@ import {
   Button
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode'; // Corrected import statement
+import { jwtDecode } from 'jwt-decode';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -39,7 +39,6 @@ function Login() {
       const { token } = res.data;
       localStorage.setItem('token', token);
 
-      // Decode token to get the role
       const decodedToken = jwtDecode(token);
       if (decodedToken.role === 'admin') {
         navigate('/dashboard', { replace: true });

@@ -36,20 +36,20 @@ const ThankYou = () => {
     return (
         <React.Fragment>
             <CssBaseline />
-            <Box sx={{ 
-                bgcolor: '#f0f2f5', 
-                minHeight: '100vh', 
-                py: 5, 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
-                justifyContent: 'center' 
+            <Box sx={{
+                bgcolor: '#f0f2f5',
+                minHeight: '100vh',
+                py: 5,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
             }}>
                 <Container maxWidth="lg">
-                    <Paper sx={{ 
-                        p: 4, 
-                        borderRadius: 3, 
-                        boxShadow: 5, 
+                    <Paper sx={{
+                        p: 4,
+                        borderRadius: 3,
+                        boxShadow: 5,
                         textAlign: 'center',
                         bgcolor: '#ffffff',
                         maxWidth: 'md',
@@ -64,14 +64,14 @@ const ThankYou = () => {
                         {scoreData.map((data, index) => (
                             <Grid container spacing={3} key={index} alignItems="center" justifyContent="center" sx={{ my: 2 }}>
                                 <Grid item xs={12} sm={6} md={4}>
-                                    <Box sx={{ 
-                                        display: 'flex', 
-                                        flexDirection: 'column', 
-                                        alignItems: 'center', 
-                                        bgcolor: '#e3f2fd', 
-                                        p: 3, 
-                                        borderRadius: 2, 
-                                        boxShadow: 3 
+                                    <Box sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        bgcolor: '#e3f2fd',
+                                        p: 3,
+                                        borderRadius: 2,
+                                        boxShadow: 3
                                     }}>
                                         <Typography variant="h6" color="textSecondary" gutterBottom>
                                             SCORE
@@ -85,11 +85,11 @@ const ThankYou = () => {
                                     </Box>
                                 </Grid>
                                 <Grid item xs={12} sm={6} md={4}>
-                                    <Card sx={{ 
-                                        p: 3, 
-                                        bgcolor: '#ffffff', 
-                                        borderRadius: 2, 
-                                        boxShadow: 3 
+                                    <Card sx={{
+                                        p: 3,
+                                        bgcolor: '#ffffff',
+                                        borderRadius: 2,
+                                        boxShadow: 3
                                     }}>
                                         <CardContent>
                                             <Typography variant="body1" gutterBottom>

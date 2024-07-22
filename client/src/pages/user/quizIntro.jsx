@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import { Box, Container, Button, Grid, Paper } from '@mui/material';
 
 const QuizIntro = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const [timer, setTimer] = useState(false);
   const [countdown, setCountdown] = useState(5);
-  const { quizId, quizName, category, quizImage,noQuestions } = location.state || {};
+  const { quizId, quizName, category, quizImage, noQuestions } = location.state || {};
 
   useEffect(() => {
     if (!location.state) {
@@ -101,7 +101,7 @@ const QuizIntro = () => {
                       marginTop: 1,
                     }}
                   >
-                    Cancel 
+                    Cancel
                   </Button>
                 </Box>
               )}

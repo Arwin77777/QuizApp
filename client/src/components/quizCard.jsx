@@ -35,13 +35,12 @@ const QuizCard = ({ quiz, onDelete }) => {
       .then(res => {
         console.log(res.data);
         setLoading(false);
-        onDelete(quizId); // Remove the quiz from the local state
-        handleClose(); // Close the dialog
+        onDelete(quizId);
+        handleClose();
       })
       .catch(err => {
         console.log(err);
         setLoading(false);
-        // Optionally, show an error message
       });
   };
 
@@ -87,7 +86,7 @@ const QuizCard = ({ quiz, onDelete }) => {
           ) : (
             <Link
               to="/quizIntro"
-              state={{ quizId, quizName, category, quizImage,noQuestions }}
+              state={{ quizId, quizName, category, quizImage, noQuestions }}
               style={{ textDecoration: 'none' }}
             >
               <Button size="small" color="primary">
